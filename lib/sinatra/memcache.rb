@@ -23,7 +23,8 @@ class MemCache
           sock.write "stats cachedump #{k} #{v}\r\n"
           while line = sock.gets
             break if line == "END\r\n"
-            r = Regexp.new("^ITEM #{@namespace}:([^\s]+)")
+            prefix = @namespace.empty? ? '' : "#{@namespace}:"
+            r = Regexp.new("^ITEM #{prefix}([^\s]+)")
             keys << $1 if line =~ r
           end
         end
