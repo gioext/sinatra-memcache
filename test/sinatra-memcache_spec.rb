@@ -31,13 +31,13 @@ describe 'Sinatra-MemCache' do
   it "cacheした内容がexpireされること" do
     get '/cache'
     get '/expire'
-    @client['cache', true].should be_nil
+    @client['cache'].should be_nil
   end
 
   it "cacheが有効時間後にexpireされること" do
     get '/cache2'
     sleep(1)
-    @client['cache2', true].should be_nil
+    @client['cache2'].should be_nil
   end
 
   it "compressが有効であること" do
@@ -50,8 +50,10 @@ describe 'Sinatra-MemCache' do
   it "全てのcacheがexpireされること" do
     get '/cache'
     get '/cache2'
+    get '/compress'
     get '/expire_re'
     @client['cache'].should be_nil
     @client['cache2'].should be_nil
+    @client['compress'].should be_nil
   end
 end

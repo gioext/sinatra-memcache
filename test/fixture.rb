@@ -29,7 +29,7 @@ get '/expire' do
 end
 
 get '/expire_re' do
-  expire /^cache/
+  expire //
 end
 
 configure do
