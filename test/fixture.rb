@@ -13,8 +13,14 @@ get '/cache' do
 end
 
 get '/cache2' do
-  cache "cache2", :expiry => 1, :raw => false do
+  cache "cache2", :expiry => 1 do
     "Hello World"
+  end
+end
+
+get '/compress' do
+  cache "compress", :compress => true do
+    "Hello Compress"
   end
 end
 

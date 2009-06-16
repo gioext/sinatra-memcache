@@ -1,4 +1,5 @@
 require 'memcache'
+require 'zlib'
 #require 'rubygems'
 #require 'sinatra/base'
 
@@ -45,19 +46,29 @@ module Sinatra
       #
       #
       #
-      def cache(key, opt = {}, &block)
+      def cache(key, params = {}, &block)
         return block.call unless options.cache_enable
 
-        opt = { :expiry => options.cache_expiry,
-                :raw => options.cache_raw }.merge(opt)
+        opts = {
+          :expiry => options.cache_default_expiry,
+          :compress => options.cache_default_compress
+        }.merge(params)
 
-        value = client[key, opt[:raw]]
+        value = client[key, true]
         unless value
-          value = block.call
-          client.set(key, value, opt[:expiry], opt[:raw])
+          value = Marshal.dump(block.call)
+          value = Zlib::Deflate.deflate(value) if opts[:compress]
+          client.set(key, value, opts[:expiry], true)
           log "cache: #{key}"
+        else
+          log "read cache: #{key}"
         end
-        value
+
+        if opts[:compress]
+          Marshal.load(Zlib::Inflate.inflate(value))
+        else
+          Marshal.load(value)
+        end
       rescue => e
         throw e if development?
         block.call
@@ -113,9 +124,9 @@ module Sinatra
       app.set :cache_server, "localhost:11211"
       app.set :cache_namespace, "sinatra-memcache"
       app.set :cache_enable, true
-      app.set :cache_expiry, 3600
-      app.set :cache_raw, true
       app.set :cache_logging, true
+      app.set :cache_default_expiry, 3600
+      app.set :cache_default_compress, false
     end
   end
   

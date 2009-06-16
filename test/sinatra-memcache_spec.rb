@@ -6,7 +6,7 @@ def app
   Sinatra::Application
 end
 
-describe Rack do
+describe 'Sinatra-MemCache' do
   before do
     @client = MemCache.new 'localhost:11211', :namespace => "test"
   end
@@ -25,7 +25,7 @@ describe Rack do
 
   it "cacheした内容が正しいこと" do
     get '/cache'
-    @client['cache', true].should == "Hello World"
+    Marshal.load(@client['cache', true]).should == "Hello World"
   end
 
   it "cacheした内容がexpireされること" do
@@ -36,16 +36,22 @@ describe Rack do
 
   it "cacheが有効時間後にexpireされること" do
     get '/cache2'
-    @client['cache2'].should == "Hello World"
     sleep(1)
-    @client['cache2'].should be_nil
+    @client['cache2', true].should be_nil
+  end
+
+  it "compressが有効であること" do
+    get '/compress'
+    last_response.ok?.should be_true
+    last_response.body.should == "Hello Compress"
+    @client['compress', true].should == Zlib::Deflate.deflate(Marshal.dump('Hello Compress'))
   end
 
   it "全てのcacheがexpireされること" do
     get '/cache'
     get '/cache2'
     get '/expire_re'
-    @client['cache', true].should be_nil
+    @client['cache'].should be_nil
     @client['cache2'].should be_nil
   end
 end
