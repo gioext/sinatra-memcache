@@ -1,12 +1,15 @@
 h1. Sinatra-MemCache
 
 Copyright (c) 2009 Kazuki UCHIDA
+
 Licensed under the MIT License:
+
 - http://www.opensource.org/licenses/mit-license.php
 
 h2. Dependencies
 
 memcache-client
+
 zlib
 
 h2. Install
