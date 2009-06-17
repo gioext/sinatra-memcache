@@ -47,6 +47,13 @@ describe 'Sinatra-MemCache' do
     @client['compress', true].should == Zlib::Deflate.deflate(Marshal.dump('Hello Compress'))
   end
 
+  it "オブジェクトがcacheされること" do
+    get '/object'
+    last_response.ok?.should be_true
+    last_response.body.should == "hello a hello b"
+    Marshal.load(@client['object', true]).should == { :a => 'hello a', :b => 'hello b' }
+  end
+
   it "全てのcacheがexpireされること" do
     get '/cache'
     get '/cache2'

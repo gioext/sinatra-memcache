@@ -24,6 +24,13 @@ get '/compress' do
   end
 end
 
+get '/object' do
+  hash = cache "object" do
+    { :a => 'hello a', :b => 'hello b' }
+  end
+  hash[:a] + ' ' + hash[:b]
+end
+
 get '/expire' do
   expire "cache"
 end
