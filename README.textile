@@ -26,10 +26,34 @@ require 'rubygems'
 require 'sinatra'
 require File.dirname(__FILE__) + '/lib/sinatra-memcache/lib/sinatra/memcache'
 
-get '/' do
-  cache do
+# cache
+get '/cache1' do
+  cache 'cache1' do
     sleep(5)
-    'Hello World'
+    'Hello Cache1'
   end
 end
+
+# cache args
+get '/cache2' do
+  cache 'cache2', :expiry => 10, :compress => true do
+    sleep(3)
+    'Hello Cache2'
+  end
+end
+
+# expire
+get '/expire' do
+  expire 'cache1'
+  expire /^cache/
+  'Hello Expire'
+end
+
+# default options
+set :cache_server, "localhost:11211"
+set :cache_namespace, "sinatra-memcache"
+set :cache_enable, true
+set :cache_logging, true
+set :cache_default_expiry, 3600
+set :cache_default_compress, false
 </pre>
