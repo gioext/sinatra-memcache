@@ -28,6 +28,13 @@ describe 'Sinatra-MemCache' do
     Marshal.load(@client['cache', true]).should == "Hello World"
   end
 
+  it "ブロック無しで読み取りのみできること" do
+    get '/cache'
+    get '/read'
+    last_response.ok?.should be_true
+    last_response.body.should == "Hello World"
+  end
+
   it "cacheした内容がexpireされること" do
     get '/cache'
     get '/expire'

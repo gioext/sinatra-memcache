@@ -18,6 +18,10 @@ get '/cache2' do
   end
 end
 
+get '/read' do
+  cache 'cache'
+end
+
 get '/compress' do
   cache "compress", :compress => true do
     "Hello Compress"

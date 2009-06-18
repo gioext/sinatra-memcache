@@ -54,20 +54,15 @@ module Sinatra
           :compress => options.cache_default_compress
         }.merge(params)
 
-        value = client[key, true]
-        unless value
-          value = Marshal.dump(block.call)
-          value = Zlib::Deflate.deflate(value) if opts[:compress]
-          client.set(key, value, opts[:expiry], true)
-          log "cache: #{key}"
-        else
-          log "read cache: #{key}"
-        end
+        value = get(key, opts)
+        return value unless block_given?
 
-        if opts[:compress]
-          Marshal.load(Zlib::Inflate.inflate(value))
+        if value
+          log "Get: #{key}"
+          value
         else
-          Marshal.load(value)
+          log "Set: #{key}"
+          set(key, block.call, opts)
         end
       rescue => e
         throw e if development?
@@ -104,9 +99,24 @@ module Sinatra
         puts "[sinatra-memcache] #{msg}" if options.cache_logging
       end
 
+      def get(key, opts)
+        v = client[key, true]
+        return v unless v
+
+        v = Zlib::Inflate.inflate(v) if opts[:compress]
+        Marshal.load(v)
+      end
+
+      def set(key, value, opts)
+        v = Marshal.dump(value)
+        v = Zlib::Deflate.deflate(v) if opts[:compress]
+        client.set(key, v, opts[:expiry], true)
+        value
+      end
+
       def expire_key(key)
         client.delete(key)
-        log "expire: #{key}"
+        log "Expire: #{key}"
       end
 
       def expire_regexp(re)
