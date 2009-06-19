@@ -34,7 +34,7 @@ get '/cache1' do
   end
 end
 
-# cache args
+# args
 get '/cache2' do
   cache 'cache2', :expiry => 10, :compress => true do
     sleep(3)
@@ -42,10 +42,20 @@ get '/cache2' do
   end
 end
 
+# cache object
+get '/obj' do
+  hash = cache 'obj' do
+    sleep(2)
+    { :a => 'Hello Object' }
+  end
+  hash[:a]
+end
+
 # expire
 get '/expire' do
   expire 'cache1'
   expire /^cache/
+  expire //
   'Hello Expire'
 end
 
