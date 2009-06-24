@@ -1,11 +1,5 @@
 h1. Sinatra-MemCache
 
-Copyright (c) 2009 Kazuki UCHIDA
-
-Licensed under the MIT License:
-
-- http://www.opensource.org/licenses/mit-license.php
-
 h2. Dependencies
 
 memcache-client
@@ -15,8 +9,7 @@ zlib
 h2. Install
 
 <pre>
-cd myapp
-git clone git://github.com/gioext/sinatra-memcache.git lib/sinatra-memcache
+sudo gem install gioext-sinatra-memcache
 </pre>
 
 h2. Example
@@ -24,7 +17,7 @@ h2. Example
 <pre>
 require 'rubygems'
 require 'sinatra'
-require File.dirname(__FILE__) + '/lib/sinatra-memcache/lib/sinatra/memcache'
+require 'sinatra/memcache'
 
 # cache
 get '/cache1' do
@@ -67,3 +60,12 @@ set :cache_logging, true
 set :cache_default_expiry, 3600
 set :cache_default_compress, false
 </pre>
+
+h2. License
+
+Copyright (c) 2009 Kazuki UCHIDA
+
+Licensed under the MIT License:
+
+- http://www.opensource.org/licenses/mit-license.php
+
