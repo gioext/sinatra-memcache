@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
     "Rakefile",
     "README.textile",
     "lib/sinatra/memcache.rb",
-    "test/sinatra-memcache_spec.rb",
-    "test/fixture.rb"
+    "spec/sinatra-memcache_spec.rb",
+    "spec/fixture.rb"
   ]
 
   s.require_paths = ["lib"]
