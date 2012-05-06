@@ -12,7 +12,7 @@ h2. Install
 sudo gem install gioext-sinatra-memcache
 </pre>
 
-h2. Example
+h2. Example (Classic-style application)
 
 <pre>
 require 'rubygems'
@@ -51,7 +51,37 @@ get '/expire' do
   expire //
   'Hello Expire'
 end
+</pre>
 
+h2. Example (Modular-style application)
+
+<pre>
+require "rubygems" if RUBY_VERSION < "1.9"
+require "sinatra"
+require "sinatra/memcache"
+
+# Only needed for the JSON example
+require "sinatra/json"
+
+class MyApp < Sinatra::Base
+  register Sinatra::MemCache
+
+  # JSON only needed for this example
+  helpers Sinatra::JSON
+
+  #Saving in JSON
+  get '/obj' do
+    hash = cache "API_call" do
+      {:my_obj => json(something_returning_json)}
+    end
+    content_type :json
+    hash[:my_obj]
+  end
+</pre>
+
+h2. Cache Options
+
+<pre>
 # default options
 set :cache_server, "localhost:11211"
 set :cache_namespace, "sinatra-memcache"
