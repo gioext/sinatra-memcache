@@ -12,4 +12,4 @@ matrix:
   fast_finish: true
 
 before_install: gem update --remote bundler
-script: bundle exec rake
+script: bundle exec rspec

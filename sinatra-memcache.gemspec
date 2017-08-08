@@ -17,4 +17,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'sinatra'
   s.add_dependency 'memcache-client'
   s.has_rdoc = 'false'
+  spec.license = 'MIT'
 end
