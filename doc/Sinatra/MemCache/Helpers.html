@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>module Sinatra::MemCache::Helpers - RDoc Documentation</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../";
+  var index_rel_prefix = "../../";
+</script>
+
+<script src="../../js/jquery.js"></script>
+<script src="../../js/darkfish.js"></script>
+
+<link href="../../css/fonts.css" rel="stylesheet">
+<link href="../../css/rdoc.css" rel="stylesheet">
+
+
+
+<body id="top" role="document" class="module">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../../table_of_contents.html#pages">Pages</a>
+    <a href="../../table_of_contents.html#classes">Classes</a>
+    <a href="../../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    
+    
+    
+    <!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    
+    <li ><a href="#method-i-cache">#cache</a>
+    
+    <li ><a href="#method-i-expire">#expire</a>
+    
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="module-Sinatra::MemCache::Helpers">
+  <h1 id="module-Sinatra::MemCache::Helpers" class="module">
+    module Sinatra::MemCache::Helpers
+  </h1>
+
+  <section class="description">
+    
+  </section>
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-cache" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">cache</span><span
+            class="method-args">(key, params = {}) { || ... }</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="cache-source">
+            <pre><span class="ruby-comment"># File lib/sinatra_memcache/memcache.rb, line 49</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">cache</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">params</span> = {})
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">yield</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">settings</span>.<span class="ruby-identifier">cache_enable</span>
+
+  <span class="ruby-identifier">opts</span> = {
+    <span class="ruby-identifier">expiry</span><span class="ruby-operator">:</span> <span class="ruby-identifier">settings</span>.<span class="ruby-identifier">cache_default_expiry</span>,
+    <span class="ruby-identifier">compress</span><span class="ruby-operator">:</span> <span class="ruby-identifier">settings</span>.<span class="ruby-identifier">cache_default_compress</span>
+  }.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">params</span>)
+
+  <span class="ruby-identifier">value</span> = <span class="ruby-identifier">get</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">opts</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">value</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>
+    <span class="ruby-identifier">log</span> <span class="ruby-node">&quot;Get: #{key}&quot;</span>
+    <span class="ruby-identifier">value</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">log</span> <span class="ruby-node">&quot;Set: #{key}&quot;</span>
+    <span class="ruby-identifier">set</span>(<span class="ruby-identifier">key</span>, <span class="ruby-keyword">yield</span>, <span class="ruby-identifier">opts</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">throw</span> <span class="ruby-identifier">e</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">development?</span>
+  <span class="ruby-keyword">yield</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-expire" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">expire</span><span
+            class="method-args">(p)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="expire-source">
+            <pre><span class="ruby-comment"># File lib/sinatra_memcache/memcache.rb, line 73</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">expire</span>(<span class="ruby-identifier">p</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">settings</span>.<span class="ruby-identifier">cache_enable</span>
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">p</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-constant">String</span>
+    <span class="ruby-identifier">expire_key</span>(<span class="ruby-identifier">p</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-constant">Regexp</span>
+    <span class="ruby-identifier">expire_regexp</span>(<span class="ruby-identifier">p</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">true</span>
+<span class="ruby-keyword">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">throw</span> <span class="ruby-identifier">e</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">development?</span>
+  <span class="ruby-keyword">false</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="http://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://rdoc.github.io/rdoc">RDoc</a> 5.0.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
