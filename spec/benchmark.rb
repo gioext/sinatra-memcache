@@ -3,15 +3,13 @@ require 'memcache'
 require 'zlib'
 require 'benchmark'
 
-CACHE = MemCache.new 'localhost:11211', :namespace => 'bench'
-def set key, value, flg
-  if flg
-    value = Zlib::Deflate.deflate(Marshal.dump(value))
-  end
+CACHE = MemCache.new 'localhost:11211', namespace: 'bench'
+def set(key, value, flg)
+  value = Zlib::Deflate.deflate(Marshal.dump(value)) if flg
   CACHE.set(key, value, 0, true)
 end
 
-def get key, flg
+def get(key, flg)
   value = CACHE[key, true]
   if flg
     Marshal.load(Zlib::Inflate.inflate(value))
