@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.3)
+    memcache-client (1.8.5)
     mustermann (1.0.0)
     rack (2.0.3)
     rack-protection (2.0.0)
@@ -32,6 +33,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  memcache-client (~> 1.8, >= 1.8.5)
   rack-test
   rspec
   sinatra
