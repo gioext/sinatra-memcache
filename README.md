@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dgvigil/sinatra-memcache.svg?branch=master)](https://travis-ci.org/dgvigil/sinatra-memcache)
+
 # Sinatra-MemCache
 
 ## Dependencies
