@@ -1,20 +1,21 @@
-h1. Sinatra-MemCache
+[![Build Status](https://travis-ci.org/dgvigil/sinatra-memcache.svg?branch=master)](https://travis-ci.org/dgvigil/sinatra-memcache)
 
-h2. Dependencies
+# Sinatra-MemCache
+
+## Dependencies
 
 memcache-client
-
 zlib
 
-h2. Install
+## Install
 
-<pre>
+```bash
 sudo gem install gioext-sinatra-memcache
-</pre>
+```
 
-h2. Example
+## Example
 
-<pre>
+```ruby
 require 'rubygems'
 require 'sinatra'
 require 'sinatra/memcache'
@@ -59,9 +60,9 @@ set :cache_enable, true
 set :cache_logging, true
 set :cache_default_expiry, 3600
 set :cache_default_compress, false
-</pre>
+```
 
-h2. License
+## License
 
 Copyright (c) 2009 Kazuki UCHIDA
 

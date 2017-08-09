@@ -1,23 +1,23 @@
 require 'memcache'
 require 'zlib'
-#require 'rubygems'
-#require 'sinatra/base'
 
+#
 class MemCache
   def all_keys
-    raise MemCacheError, "No active servers" unless active?
+    raise MemCacheError, 'No active servers' unless active?
     keys = []
 
     @servers.each do |server|
       sock = server.socket
-      raise MemCacheError, "No connection to server" if sock.nil?
+      raise MemCacheError, 'No connection to server' if sock.nil?
 
       begin
         sock.write "stats items\r\n"
         slabs = {}
         while line = sock.gets
           break if line == "END\r\n"
-          slabs[$1] = $2 if line =~ /^STAT items:(\d+):number (\d+)/ 
+          slabs[Regexp.last_match(1)] = Regexp.last_match(2) if \
+            line =~ /^STAT items:(\d+):number (\d+)/
         end
 
         slabs.each do |k, v|
@@ -26,7 +26,7 @@ class MemCache
             break if line == "END\r\n"
             prefix = @namespace.empty? ? '' : "#{@namespace}:"
             r = Regexp.new("^ITEM #{prefix}([^\s]+)")
-            keys << $1 if line =~ r
+            keys << Regexp.last_match(1) if line =~ r
           end
         end
       rescue SocketError, SystemCallError, IOError => err
@@ -39,19 +39,19 @@ class MemCache
   end
 end
 
+#
 module Sinatra
+  #
   module MemCache
+    #
     module Helpers
-
       #
-      #
-      #
-      def cache(key, params = {}, &block)
-        return block.call unless options.cache_enable
+      def cache(key, params = {})
+        return yield unless settings.cache_enable
 
         opts = {
-          :expiry => options.cache_default_expiry,
-          :compress => options.cache_default_compress
+          expiry: settings.cache_default_expiry,
+          compress: settings.cache_default_compress
         }.merge(params)
 
         value = get(key, opts)
@@ -62,19 +62,16 @@ module Sinatra
           value
         else
           log "Set: #{key}"
-          set(key, block.call, opts)
+          set(key, yield, opts)
         end
       rescue => e
         throw e if development?
-        block.call
+        yield
       end
 
       #
-      #
-      #
       def expire(p)
-        return unless options.cache_enable
-
+        return unless settings.cache_enable
         case p
         when String
           expire_key(p)
@@ -87,16 +84,16 @@ module Sinatra
         false
       end
 
-
       private
 
       def client
-        options.cache_client ||= ::MemCache.new options.cache_server,
-          :namespace => options.cache_namespace
+        settings.cache_client ||= ::MemCache.new settings.cache_server,
+                                                 namespace: \
+                                                 settings.cache_namespace
       end
 
       def log(msg)
-        puts "[sinatra-memcache] #{msg}" if options.cache_logging
+        puts "[sinatra-memcache] #{msg}" if settings.cache_logging
       end
 
       def get(key, opts)
@@ -131,15 +128,14 @@ module Sinatra
       app.helpers MemCache::Helpers
 
       app.set :cache_client, nil
-      app.set :cache_server, "localhost:11211"
-      app.set :cache_namespace, "sinatra-memcache"
+      app.set :cache_server, 'localhost:11211'
+      app.set :cache_namespace, 'sinatra-memcache'
       app.set :cache_enable, true
       app.set :cache_logging, true
       app.set :cache_default_expiry, 3600
       app.set :cache_default_compress, false
     end
   end
-  
-  register MemCache
 
+  register MemCache
 end

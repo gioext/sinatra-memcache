@@ -1,73 +1,101 @@
-require File.dirname(__FILE__) + '/fixture'
-require 'rack/test'
+# frozen_string_literal: true
 
-include Rack::Test::Methods
-def app
-  Sinatra::Application
+require 'rack/test'
+require 'rspec'
+require File.dirname(__FILE__) + '/fixture'
+
+RSpec.configure do |config|
+  config.color = true
+  config.tty = true
+  config.formatter = :documentation
 end
 
-describe 'Sinatra-MemCache' do
+ENV['RACK_ENV'] = 'test'
+
+module RSpecMixin
+  include Rack::Test::Methods
+  def app
+    Sinatra::Application
+  end
+end
+
+RSpec.configure { |c| c.include RSpecMixin }
+
+describe 'Sinatra-MemCache basics' do
   before do
-    @client = MemCache.new 'localhost:11211', :namespace => "test"
+    @client = MemCache.new 'localhost:11211', namespace: 'test'
   end
 
-  it "indexのレスポンスが正しいこと" do
+  it 'Verify the response of index is correct' do
     get '/'
-    last_response.ok?.should be_true
-    last_response.body.should == "Hello World"
+    expect(last_response).to be_ok
+    expect(last_response.body).to eq('Hello World')
   end
 
-  it "cacheしたときのレスポンスが正しいこと" do
+  it 'Verify cache content is correct' do
     get '/cache'
-    last_response.ok?.should be_true
-    last_response.body.should == "Hello World"
+    expect(last_response).to be_ok
+    expect(last_response.body).to eq('Hello World')
   end
 
-  it "cacheした内容が正しいこと" do
+  it 'Verify cache content is correct' do
     get '/cache'
-    Marshal.load(@client['cache', true]).should == "Hello World"
+    expect(Marshal.load(@client['cache', true])).to eq('Hello World')
   end
 
-  it "ブロック無しで読み取りのみできること" do
+  it 'Readable only without block' do
     get '/cache'
     get '/read'
-    last_response.ok?.should be_true
-    last_response.body.should == "Hello World"
+    expect(last_response).to be_ok
+    expect(last_response.body).to eq('Hello World')
+  end
+end
+
+describe 'Sinatra-MemCache exires and compress' do
+  before do
+    @client = MemCache.new 'localhost:11211', namespace: 'test'
   end
 
-  it "cacheした内容がexpireされること" do
+  it 'Verify that cach can be expired' do
     get '/cache'
     get '/expire'
-    @client['cache'].should be_nil
+    expect(@client['cache']).to be_nil
   end
 
-  it "cacheが有効時間後にexpireされること" do
+  it 'Expire cache after valid amount of time' do
     get '/cache2'
     sleep(1)
-    @client['cache2'].should be_nil
+    expect(@client['cache2']).to be_nil
   end
 
-  it "compressが有効であること" do
-    get '/compress'
-    last_response.ok?.should be_true
-    last_response.body.should == "Hello Compress"
-    @client['compress', true].should == Zlib::Deflate.deflate(Marshal.dump('Hello Compress'))
-  end
-
-  it "オブジェクトがcacheされること" do
-    get '/object'
-    last_response.ok?.should be_true
-    last_response.body.should == "hello a hello b"
-    Marshal.load(@client['object', true]).should == { :a => 'hello a', :b => 'hello b' }
-  end
-
-  it "全てのcacheがexpireされること" do
+  it 'Expire all the things' do
     get '/cache'
     get '/cache2'
     get '/compress'
     get '/expire_re'
-    @client['cache'].should be_nil
-    @client['cache2'].should be_nil
-    @client['compress'].should be_nil
+    expect(@client['cache']).to be_nil
+    expect(@client['cache2']).to be_nil
+    expect(@client['compress']).to be_nil
+  end
+end
+
+describe 'Sinatra-MemCache exires and compress' do
+  before do
+    @client = MemCache.new 'localhost:11211', namespace: 'test'
+  end
+  it 'Verify compress is working' do
+    get '/compress'
+    expect(last_response).to be_ok
+    expect(last_response.body).to eq('Hello Compress')
+    expect(@client['compress', true]).to \
+      eq(Zlib::Deflate.deflate(Marshal.dump('Hello Compress')))
+  end
+
+  it 'Cache the object' do
+    get '/object'
+    expect(last_response).to be_ok
+    expect(last_response.body).to eq('hello a hello b')
+    expect(Marshal.load(@client['object', true])).to \
+      eq(a: 'hello a', b: 'hello b')
   end
 end
