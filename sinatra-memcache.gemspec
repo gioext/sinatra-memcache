@@ -7,7 +7,7 @@ require 'sinatra_memcache/version'
 Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.name = "sinatra-memcache"
-  s.version = SinatraMemcache::VERSION
+  s.version = '0.1.1'
   s.date = '2009-06-24'
   s.authors = %w[gioext dgvigil]
   s.email = 'dgvigil@gmail.com'
