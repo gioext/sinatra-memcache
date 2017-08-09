@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'sinatra'
-require File.dirname(__FILE__) + '/../lib/sinatra_memcache/memcache'
+require File.dirname(__FILE__) + '/../lib/sinatra/memcache'
 
 get '/' do
   'Hello World'
